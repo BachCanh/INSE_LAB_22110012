@@ -57,14 +57,14 @@ We will compile file c with this code:
 ``` gcc shellcode.c -o shellcode -fno-stack-protector -z execstack -mpreferred-stack-boundary=2 ```
 
 
-### 4. Draw stackframe
+### 3. Draw stackframe
 Base on code of vuln.c, we have this stackframe:
 
 And in this task, we will use return-to-libc attack with environment variable. So that we also need the system() stackframe:
 
 ![image](https://github.com/user-attachments/assets/afec8b65-5745-41b4-843f-81e47b4fb245)
 
-### 5. Turn off the ASLR and change to use an old bash
+### 4. Turn off the ASLR and change to use an old bash
 We use this code to turn off the address space randomization on stack:
 ```
 sudo sysctl -w kernel.randomize_va_space=0
@@ -77,7 +77,7 @@ And this for change to use an old bash
 
 ![image](https://github.com/user-attachments/assets/e32df50b-aea4-41e1-b6ee-b2cf62936819)
 
-### 6. Create the environment variable
+### 5. Create the environment variable
 Before create the environment variable, we use pwd to find the current path.
 
 And out current path is: /home/seed/seclabs
@@ -93,7 +93,7 @@ echo $path
 
 ![image](https://github.com/user-attachments/assets/5c395775-3fce-489f-9664-3f6dab67238c)
 
-### 7. Check status of /etc/shadow privilege before we attack
+### 6. Check status of /etc/shadow privilege before we attack
 
 We use this code to check:
 
@@ -101,7 +101,7 @@ We use this code to check:
 
 ![image](https://github.com/user-attachments/assets/62a727a8-3c60-474b-8ebb-306063245a26)
 
-### 8. Find the address for the attack
+### 7. Find the address for the attack
 We will use gdb peda to find the address
 
 To enter to gdb, use this code:
