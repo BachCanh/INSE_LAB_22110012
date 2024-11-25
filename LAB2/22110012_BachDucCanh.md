@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/b19e4f41-18c4-4550-b0d2-73f309306252)# Lab #1, 22110012, Bach Duc Canh, INSE331280E_01FIE
+# Lab #1, 22110012, Bach Duc Canh, INSE331280E_01FIE
 # Task 1: Transfer files between computers
 This lab explores various encryption algorithm with openssl
 **Question 1**: 
