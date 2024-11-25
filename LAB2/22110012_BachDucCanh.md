@@ -112,7 +112,6 @@ And you can see, it show nothing so there are no differences are found, the file
 
 ## 6. Last check:
 
-
 ```sh
 cat sample.txt.sha256
 openssl dgst -sha256 sample.txt
@@ -155,6 +154,9 @@ openssl genrsa -out sender.key 2048
 openssl rsa -in sender.key -pubout -out sender.pub
 ```
 
+![image](https://github.com/user-attachments/assets/c44ad4e1-6687-4741-84b5-79d0df5d2b67)
+
+
 ## 4. Sign the Hash
 Sign the checksum file with the sender's private key to create a signature, ensuring authenticity.
 
@@ -175,7 +177,8 @@ openssl enc -aes-256-cbc -salt -in sample.txt -out encrypted_file.bin -pass file
 ```sh
 openssl rsautl -encrypt -inkey /home/alice/bob_pub.pem -pubin -in symmetric_key.bin -out encrypted_key.bin
 ```
-![image](https://github.com/user-attachments/assets/ae289041-9df3-4d7f-a1d9-c21384dfe1f4)
+
+![image](https://github.com/user-attachments/assets/32f838eb-0b8d-4984-bd15-ed841aa8b122)
 
 ## 6. Transfer the Files to Bob
 Use scp to transfer the files to Bob's IP (10.9.0.6):
@@ -218,6 +221,9 @@ Use the decrypted symmetric key to decrypt encrypted_file.bin, obtaining the ori
 openssl enc -d -aes-256-cbc -in encrypted_file.bin -out sample.txt -pass file:decrypted_symmetric_key.bin
 ```
 
+![image](https://github.com/user-attachments/assets/f7a4ac3f-2c16-49aa-b49f-5dfee58d3bf7)
+
+
 ## 5. Verify the File’s Authenticity (Signature Verification)
 Verify the file's signature to confirm authenticity.
 ```sh
@@ -229,7 +235,16 @@ If the signature matches, the output will show:
 ```
 Verified OK
 ```
-![image](https://github.com/user-attachments/assets/a596a07c-d057-4d11-a683-9ad5018b815f)
 
+![image](https://github.com/user-attachments/assets/86e211c1-dc8b-4357-a2c1-d344e36ea1a8)
+
+## 5. Verify the File’s Authenticity (Signature Verification)
+Compare the original hash (sample.txt.sha256) with the newly computed hash to confirm integrity.
+```sh
+diff sample.txt.sha256 <(openssl dgst -sha256 sample.txt)
+```
+If the signature matches, the output will show:
+
+![image](https://github.com/user-attachments/assets/e879b575-4f72-4693-a12b-06edcc5718ac)
 
 # Task 3: Firewall configuration
