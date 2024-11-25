@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/1fa0a5ff-67cf-4bee-86aa-400543ce4910)![image](https://github.com/user-attachments/assets/a004bfc7-28b0-4cc8-9847-d60bbb378586)# Lab #1, 22110012, Bach Duc Canh, INSE331280E_01FIE
+![image](https://github.com/user-attachments/assets/b19e4f41-18c4-4550-b0d2-73f309306252)# Lab #1, 22110012, Bach Duc Canh, INSE331280E_01FIE
 # Task 1: Transfer files between computers
 This lab explores various encryption algorithm with openssl
 **Question 1**: 
@@ -65,7 +65,6 @@ scp sample.txt sample.txt.sig sender.pub bob@10.9.0.6:/home/user/
 apt update
 apt install -y openssh-server
 ```
-
 ![image](https://github.com/user-attachments/assets/4c90adec-e0d9-4bcf-907e-cb22f8ccef34)
 
 ## 2. Run the server and check the connection:
@@ -176,6 +175,7 @@ openssl enc -aes-256-cbc -salt -in sample.txt -out encrypted_file.bin -pass file
 ```sh
 openssl rsautl -encrypt -inkey /home/alice/bob_pub.pem -pubin -in symmetric_key.bin -out encrypted_key.bin
 ```
+![image](https://github.com/user-attachments/assets/ae289041-9df3-4d7f-a1d9-c21384dfe1f4)
 
 ## 6. Transfer the Files to Bob
 Use scp to transfer the files to Bob's IP (10.9.0.6):
@@ -183,22 +183,53 @@ Use scp to transfer the files to Bob's IP (10.9.0.6):
 ```sh
 scp encrypted_file.bin encrypted_key.bin sample.txt.sig sender.pub bob@10.9.0.6:/home/bob/
 ```
+![image](https://github.com/user-attachments/assets/91b66d10-01ca-4158-8875-7f0b5b26e22a)
 
 ## On Bob Side
 
+## 1. Generate Bob’s Private Key (bob_priv.pem) and Bob’s Public Key (bob_pub.pem)
+
+```sh
+openssl genpkey -algorithm RSA -out /root/bob_priv.pem -pkeyopt rsa_keygen_bits:2048
+openssl rsa -in /root/bob_priv.pem -pubout -out /root/bob_pub.pem
+```
+![image](https://github.com/user-attachments/assets/6acc7493-6e90-404c-9654-a30b928f8cdd)
+
+
+## 2. Send public key to Alice
+
+Use scp to transfer the files to Alice's IP (10.9.0.5):
+```sh
+scp /root/bob_pub.pem alice@10.9.0.5:/home/alice/
+```
+![image](https://github.com/user-attachments/assets/707a886c-8db7-490c-ad8f-6cd902ac6570)
+
+## 3. Decrypt the Symmetric Key with RSA after receive success
+
+Decrypt the symmetric key using Bob’s private RSA key (bob_priv.pem).
+```sh
+openssl rsautl -decrypt -inkey /root/bob_priv.pem -in encrypted_key.bin -out decrypted_symmetric_key.bin
+```
+
+## 4. Decrypt the Encrypted File
+
+Use the decrypted symmetric key to decrypt encrypted_file.bin, obtaining the original sample.txt.
+```sh
+openssl enc -d -aes-256-cbc -in encrypted_file.bin -out sample.txt -pass file:decrypted_symmetric_key.bin
+```
+
+## 5. Verify the File’s Authenticity (Signature Verification)
+Verify the file's signature to confirm authenticity.
+```sh
+openssl dgst -sha256 sample.txt > sample.txt.sha256
+openssl dgst -sha256 -verify sender.pub -signature sample.txt.sig sample.txt.sha256
+```
+If the signature matches, the output will show:
+
+```
+Verified OK
+```
+![image](https://github.com/user-attachments/assets/a596a07c-d057-4d11-a683-9ad5018b815f)
 
 
 # Task 3: Firewall configuration
-**Question 1**:
-From VMs of previous tasks, install iptables and configure one of the 2 VMs as a web and ssh server. Demonstrate your ability to block/unblock http, icmp, ssh requests from the other host.
-
-**Answer 1**:
-
-
-## 4. Combine the header and encrypted body:
-
-```sh
-cat header.bin encrypted_body.bin > partially_encrypted.bmp
-```
-
-<img width="500" alt="Screenshot" src="https://github.com/AlexanderSlokov/Security-Labs-Submission/blob/main/asset/encryptingLargeMessage9.png?raw=true"><br>
