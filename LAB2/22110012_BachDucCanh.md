@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/7a8432ab-80e4-4339-bc23-8449781436c3)# Lab #1, 22110012, Bach Duc Canh, INSE331280E_01FIE
+# Lab #1, 22110012, Bach Duc Canh, INSE331280E_01FIE
 # Task 1: Transfer files between computers
 This lab explores various encryption algorithm with openssl
 **Question 1**: 
@@ -381,7 +381,7 @@ These commands do the following:
 2. **`sudo iptables -A OUTPUT -p icmp --icmp-type echo-request -d 172.27.0.1 -j DROP`**:
    - **`sudo`**: Executes the command with superuser privileges, which are required for modifying firewall rules.
    - **`iptables`**: Invokes the `iptables` utility to manage firewall rules on a Linux-based system.
-   - 
+     
    - **`-A INPUT`**: Appends a rule to the `INPUT` chain, which controls incoming network traffic.
    - **`-A OUTPUT`**: Appends a rule to the `OUTPUT` chain, which controls outgoing network traffic.
    
@@ -475,8 +475,6 @@ On SeedUbuntu using command to access http:
 ```
 curl http://172.27.3.51
 ```
-
-![image](https://github.com/user-attachments/assets/ea47e9ef-a289-4d44-963b-29f08b06c671)
 
 Unblock ICMP:
 
