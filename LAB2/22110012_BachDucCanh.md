@@ -1,4 +1,4 @@
-# Lab #1, 22110012, Bach Duc Canh, INSE331280E_01FIE
+![image](https://github.com/user-attachments/assets/7a8432ab-80e4-4339-bc23-8449781436c3)# Lab #1, 22110012, Bach Duc Canh, INSE331280E_01FIE
 # Task 1: Transfer files between computers
 This lab explores various encryption algorithm with openssl
 **Question 1**: 
@@ -315,27 +315,37 @@ sudo ip a
 
 And the ip is: `172.27.3.51`
 
-In canh123 ubuntu, i have sniff2.py used to sniff the ip address to sender and receiver
+In SeedUbuntu, i have ``` ip addr ```
 
-![image](https://github.com/user-attachments/assets/c2abf94b-16e7-4407-87b5-10b388041e81)
+![image](https://github.com/user-attachments/assets/4dcab27a-4d82-47b8-9906-abde541681d6)
 
-The code
+We can see it have many ip address, so for make sure i get the true IP, I will ping from SeedUbuntu to canh123 and use tcpdump to listen the packet
 
-![image](https://github.com/user-attachments/assets/43fd5572-5f80-4471-8f42-0d6f633bc00c)
+First, in canh123, i enter:
 
-So, i will try to ping from UbuntuSeed to canh123 ubuntu. The information sniff2.py catch
+```sh
+sudo tcpdump -i eth0 icmp -n
+```
+-n flag disables hostname resolution, so the output will show raw IP addresses
 
-![image](https://github.com/user-attachments/assets/f14ae819-6f2e-4c86-978d-61fdb1d28624)
+![image](https://github.com/user-attachments/assets/f78cea0b-39f7-4681-8b92-0cd5bfe90797)
 
-So the IP of SeedUbuntu is `172.22.0.1`
+After that, I ping from SeedUbuntu
 
+![image](https://github.com/user-attachments/assets/23fbb710-5cab-48b8-9e56-2798f72c131e)
+
+And from canh123, I can catch the icmp packets:
+
+![image](https://github.com/user-attachments/assets/ecbc9316-7710-4917-99e6-7410eacdd96f)
+
+So the ip address of SeedUbuntu is: `172.27.0.1`
 
 ### Block http, icmp, ssh requests from the other host.
 
 Block http using command
 
 ```
-sudo iptables -A INPUT -p tcp --dport 80 -s 172.22.0.1 -j DROP
+sudo iptables -A INPUT -p tcp --dport 80 -s 172.27.0.1 -j DROP
 ```
 
 This command does the following:
@@ -345,60 +355,57 @@ This command does the following:
 - **`-A INPUT`**: Appends a rule to the `INPUT` chain, which controls incoming network traffic.
 - **`-p tcp`**: Specifies the protocol as TCP (Transmission Control Protocol).
 - **`--dport 80`**: Specifies that the rule applies to traffic destined for port 80, which is commonly used for HTTP.
-- **`-s 172.22.0.1`**: Specifies that the rule applies to traffic originating from the IP address `172.22.0.1`.
+- **`-s 172.27.0.1`**: Specifies that the rule applies to traffic originating from the IP address `172.27.0.1`.
 - **`-j DROP`**: Specifies the action to take, which is to drop the packet, effectively blocking the connection.
   
-![image](https://github.com/user-attachments/assets/3be143a4-1069-4234-a177-3d046eaa6319)
+![image](https://github.com/user-attachments/assets/4158cb0d-c41f-4cd5-9060-c2f4786e2342)
 
-
-and then next, we can try to access http from UbuntuSeed Machine using command
+and then next, we can try to access http from SeedUbuntu Machine using command
 
 ```
-curl http://172.22.11.42
+curl http://172.27.3.51
 ```
-![image](https://github.com/user-attachments/assets/0ddaf326-e0a6-4066-8e74-59fab02d5084)
+
+![image](https://github.com/user-attachments/assets/31a584ff-d38c-455c-ab9b-05f05d9da1d8)
+
 
 Block both incoming and outoging icmp using command
 
 ```
-sudo iptables -A INPUT -p icmp --icmp-type echo-request -s 172.22.0.1 -j DROP
-sudo iptables -A OUTPUT -p icmp --icmp-type echo-request -d 172.22.0.1 -j DROP
+sudo iptables -A INPUT -p icmp --icmp-type echo-request -s 172.27.0.1 -j DROP
+sudo iptables -A OUTPUT -p icmp --icmp-type echo-request -d 172.27.0.1 -j DROP
 ```
 These commands do the following:
 
-1. **`sudo iptables -A INPUT -p icmp --icmp-type echo-request -s 172.22.0.1 -j DROP`**:
+1. **`sudo iptables -A INPUT -p icmp --icmp-type echo-request -s 172.27.0.1 -j DROP`**:
+2. **`sudo iptables -A OUTPUT -p icmp --icmp-type echo-request -d 172.27.0.1 -j DROP`**:
    - **`sudo`**: Executes the command with superuser privileges, which are required for modifying firewall rules.
    - **`iptables`**: Invokes the `iptables` utility to manage firewall rules on a Linux-based system.
+   - 
    - **`-A INPUT`**: Appends a rule to the `INPUT` chain, which controls incoming network traffic.
+   - **`-A OUTPUT`**: Appends a rule to the `OUTPUT` chain, which controls outgoing network traffic.
+   
    - **`-p icmp`**: Specifies the protocol as ICMP (Internet Control Message Protocol), which is used for ping requests and replies.
    - **`--icmp-type echo-request`**: Specifies that the rule applies to ICMP echo requests (ping requests).
-   - **`-s 172.22.0.1`**: Specifies that the rule applies to traffic originating from the IP address `172.22.0.1`.
+     
+   - **`-s 172.27.0.1`**: Specifies that the rule applies to traffic originating from the IP address `172.27.0.1`.
+   - **`-d 172.27.0.1`**: Specifies that the rule applies to traffic destined for the IP address `172.27.0.1`.
+
    - **`-j DROP`**: Specifies the action to take, which is to drop the packet, effectively blocking the connection.
 
-2. **`sudo iptables -A OUTPUT -p icmp --icmp-type echo-request -d 172.22.0.1 -j DROP`**:
-   - **`sudo`**: Executes the command with superuser privileges.
-   - **`iptables`**: Invokes the `iptables` utility.
-   - **`-A OUTPUT`**: Appends a rule to the `OUTPUT` chain, which controls outgoing network traffic.
-   - **`-p icmp`**: Specifies the protocol as ICMP.
-   - **`--icmp-type echo-request`**: Specifies that the rule applies to ICMP echo requests (ping requests).
-   - **`-d 172.22.0.1`**: Specifies that the rule applies to traffic destined for the IP address `172.22.0.1`.
-   - **`-j DROP`**: Specifies the action to take, which is to drop the packet, effectively blocking the outgoing ping request.
+![image](https://github.com/user-attachments/assets/97a13b9a-7f20-4217-99da-1b6ed8a2c4bd)
 
-![image](https://github.com/user-attachments/assets/95102769-b3d9-491f-b989-172e62c2ceff)
-
-
-
-
-and then next, we can try to ping from UbuntuSeed Machine using command
+and then next, we can try to ping from SeedUbuntu Machine using command
 
 ```
-ping 172.22.11.42
+ping 172.27.3.51
 ```
 
-On SeedUbuntu
-![image](https://github.com/user-attachments/assets/2b0c5ca3-c038-444f-8318-9a0eaa4e82fa)
+![image](https://github.com/user-attachments/assets/e40795ef-6ba6-49ce-8990-501e5eb9f228)
 
-As you can see, they cannot comunate each other through icmp
+As you can see, they cannot comunate each other through icmp 
+
+![image](https://github.com/user-attachments/assets/a8803722-063d-422d-bcfb-92e7ef437ba7)
 
 
 Block ssh request
@@ -406,7 +413,7 @@ Block ssh request
 We can block all SSH requests from other hosts using command
 
 ```
-sudo iptables -A INPUT -p tcp --dport 22 -s 172.22.0.1 -j DROP
+sudo iptables -A INPUT -p tcp --dport 22 -s 172.27.0.1 -j DROP
 ```
 This command does the following:
 
@@ -415,45 +422,43 @@ This command does the following:
 - **`-A INPUT`**: Appends a rule to the `INPUT` chain, which controls incoming network traffic.
 - **`-p tcp`**: Specifies the protocol as TCP (Transmission Control Protocol).
 - **`--dport 22`**: Specifies that the rule applies to traffic destined for port 22, which is commonly used for SSH (Secure Shell) connections.
-- **`-s 172.22.0.1`**: Specifies that the rule applies to traffic originating from the IP address `172.22.0.1`.
+- **`-s 172.27.0.1`**: Specifies that the rule applies to traffic originating from the IP address `172.27.0.1`.
 - **`-j DROP`**: Specifies the action to take, which is to drop the packet, effectively blocking the connection.
 
-![image](https://github.com/user-attachments/assets/0695251c-a34e-41dd-8dd2-4915f0c56826)
+![image](https://github.com/user-attachments/assets/08b5b1d7-ab89-42ba-a353-d804d3fd7e38)
+
 
 
 On canh123 ubuntu, we can confirm that openssh-server is still running
 
-![image](https://github.com/user-attachments/assets/307e68d3-6b86-4866-9c1b-46b3ee8aad8b)
+![image](https://github.com/user-attachments/assets/ddf399e3-c031-447d-b716-b08fd4a0f34b)
 
 On SeedUbuntu Machine, we can confirm that openssh-server is still running
 
-![image](https://github.com/user-attachments/assets/5fe4070d-2277-411e-a654-6e5738458db1)
+![image](https://github.com/user-attachments/assets/411dd66c-bd70-44a7-ac51-8803bde114b4)
 
 Try to send file.txt from SeedUbuntu using command
 ```
-scp test.txt canh123@172.22.11.42:/home
+scp test.txt canh123@172.27.3.51:/home
 ```
 
 This command does the following:
 
 - **`scp`**: Invokes the secure copy protocol to transfer files between a local machine and a remote machine over SSH.
 - **`test.txt`**: Specifies the file (`test.txt`) to be transferred.
-- **`canh123@172.22.11.42:/home`**: Specifies the remote server's username (`canh123`), IP address (`172.22.11.42`), and the destination directory (`/home/`) where the file will be copied.
+- **`canh123@172.27.3.51:/home`**: Specifies the remote server's username (`canh123`), IP address (`172.27.3.51`), and the destination directory (`/home/`) where the file will be copied.
 
-![image](https://github.com/user-attachments/assets/47eb8a95-ff6d-4839-ae0e-8d394d07fdf9)
-
+![image](https://github.com/user-attachments/assets/5d2831f2-d117-42d7-a4d7-c886af41e52d)
 
 The picture show that we cant connect to canh123's ssh channel
 
 ### Unblock http, icmp, ssh requests from the other host.
 
-
-
 Unblock HTTP:
 
 Number-list iptables
-![image](https://github.com/user-attachments/assets/5699b33f-dc76-4787-b64e-4c5e4efc036e)
 
+![image](https://github.com/user-attachments/assets/41a6793a-d81d-40ef-be91-221ff755092c)
 
 On canh123 ubuntu, we can unblock http request using command
 ```
@@ -468,15 +473,14 @@ This command does the following:
 
 On SeedUbuntu using command to access http:
 ```
-curl http://172.22.11.42
+curl http://172.27.3.51
 ```
-![image](https://github.com/user-attachments/assets/f39660c2-8b33-49eb-abf3-f0710456bae3)
 
+![image](https://github.com/user-attachments/assets/ea47e9ef-a289-4d44-963b-29f08b06c671)
 
 Unblock ICMP:
 
-![image](https://github.com/user-attachments/assets/34d5d2b8-1482-466b-834d-854c696d1eb3)
-
+![image](https://github.com/user-attachments/assets/bd04068f-73e4-40d4-9e39-b2939893cf40)
 
 On canh123 ubuntu, we can unblock icmp request using command
 ```
@@ -486,35 +490,29 @@ sudo iptables -D OUTPUT 1
 These commands do the following:
 
 1. **`sudo iptables -D INPUT 1`**:
+1. **`sudo iptables -D OUTPUT 1`**:
    - **`sudo`**: Executes the command with superuser privileges, which are required for modifying firewall rules.
    - **`iptables`**: Invokes the `iptables` utility to manage firewall rules on a Linux-based system.
    - **`-D INPUT`**: Deletes a rule from the `INPUT` chain, which controls incoming network traffic.
-   - **`1`**: Specifies the rule number to delete from the `INPUT` chain. In this case, `1` refers to the first rule in the list.
-
-2. **`sudo iptables -D OUTPUT 1`**:
-   - **`sudo`**: Executes the command with superuser privileges.
-   - **`iptables`**: Invokes the `iptables` utility.
    - **`-D OUTPUT`**: Deletes a rule from the `OUTPUT` chain, which controls outgoing network traffic.
-   - **`1`**: Specifies the rule number to delete from the `OUTPUT` chain. In this case, `1` refers to the first rule in the list.
+   - **`1`**: Specifies the rule number to delete from the `INPUT` chain. In this case, `1` refers to the first rule in the list.
 
 the number based on the picture number-list iptables
 
-![image](https://github.com/user-attachments/assets/e66d89d0-ea65-4e7b-8579-67c6ab3ab42e)
-
+![image](https://github.com/user-attachments/assets/a2a07172-5509-45b1-b351-3b8b2eed9764)
 
 On SeedUbuntu, we can try to ping to canh123 ubuntu using command
 ```
-ping 172.22.11.42
+ping 172.27.3.51
 ```
 
-![image](https://github.com/user-attachments/assets/c1bf4d4a-5d1c-46f6-ac70-db7268ad3b94)
+![image](https://github.com/user-attachments/assets/741b2d60-61a6-452c-830c-be0503cf9550)
 
 We can see on the picture that, there is request and reply between 2 hosts
 
 Unblock SSH
 
-![image](https://github.com/user-attachments/assets/dfe0389f-b89e-4032-acc1-da3a196d58c9)
-
+![image](https://github.com/user-attachments/assets/e2ed6d89-fee2-4942-b185-be10654d303e)
 
 On canh123 ubuntu, we can unblock ssh using command 
 ```
@@ -527,9 +525,7 @@ This command does the following:
 - **`-D INPUT`**: Deletes a rule from the `INPUT` chain, which controls incoming network traffic.
 - **`1`**: Specifies the rule number to delete from the `INPUT` chain. In this case, `1` refers to the first rule in the list.
 
-![image](https://github.com/user-attachments/assets/2bbb95a7-52c6-412a-ba60-f006d87b5920)
-
-
+![image](https://github.com/user-attachments/assets/bba1373e-4099-4727-a33d-bb65f535711d)
 
 On the woox ubuntu, i will set all priority for home folder using command
 ```
@@ -539,12 +535,12 @@ chmod 777 /home
 
 On SeedUnbuntu, we can try to send test.txt file to canh123 ubuntu using command
 ```
-scp test.txt canh123@172.22.11.42:/home
+scp test.txt canh123@172.27.3.51:/home
 ```
 This command does the following:
 
 - **`scp`**: Invokes the secure copy protocol to transfer files between a local machine and a remote machine over SSH.
 - **`test.txt`**: Specifies the file (`test.txt`) to be transferred.
-- **`canh123@172.22.11.42:/home`**: Specifies the remote server's username (`canh123`), IP address (`172.22.11.42`), and the destination directory (`/home/`) where the file will be copied.
-  
-![image](https://github.com/user-attachments/assets/7e275985-f202-49fe-9512-6101c2cfadc4)
+- **`canh123@172.27.3.51:/home`**: Specifies the remote server's username (`canh123`), IP address (`172.27.3.51`), and the destination directory (`/home/`) where the file will be copied.
+
+  ![image](https://github.com/user-attachments/assets/cf2b972b-5b23-45b0-91ac-711eb05ea0d7)
